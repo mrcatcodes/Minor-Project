@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Empowerment Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+</head>
+<body>
+    <header>
+        </header>
+
+    <section id="hero">
+        </section>
+
+    <section id="education">
+        </section>
+
+    <section id="investment">
+        <h2>Micro-Investment Opportunities</h2>
+        <div class="content">
+            <div class="card">
+                <h3>Investment Recommendations</h3>
+                <a href="{{ url_for('investment') }}">Get Recommendation</a> 
+            </div>
+        </div>
+    </section>
+
+    <section id="budgeting">
+        <h2>AI-Powered Budgeting</h2>
+        <div class="content">
+            <div class="card">
+                <h3>Track Expenses</h3>
+                <a href="{{ url_for('track_expenses') }}">Start Tracking</a>
+            </div>
+            <div class="card">
+                <h3>Create a Budget</h3>
+                <a href="#">Create Budget</a>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

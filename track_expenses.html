@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <h2>Track Your Expenses</h2>
+
+    <label for="income">Income:</label>
+    <input type="number" id="income" /><br><br>
+
+    <div id="expense-entries">
+        <h3>Add Expenses:</h3>
+        <div id="expense-entry-template" style="display: none;">
+            <label for="expense-category">Expense Category:</label>
+            <input type="text" id="expense-category" /><br>
+            <label for="expense-amount">Expense Amount:</label>
+            <input type="number" id="expense-amount" /><br>
+            <button class="remove-expense">Remove</button><br><br>
+        </div>
+        <button id="add-expense-field">Add Expense</button>
+    </div>
+
+    <label for="savings-goal">Savings Goal:</label>
+    <input type="number" id="savings-goal" /><br><br>
+
+    <button id="calculate">Calculate</button>
+
+    <div id="results">
+        <h3>Results:</h3>
+        <p id="total-expenses">Total Expenses:</p>
+        <p id="savings">Savings:</p>
+        <p id="advice">Advice:</p>
+    </div>
+
+    <script>
+        const addExpenseBtn = document.getElementById('add-expense-field');
+        const expenseEntryTemplate = document.getElementById('expense-entry-template');
+        const expenseEntriesContainer = document.getElementById('expense-entries');
+        const calculateBtn = document.getElementById('calculate');
+        const incomeInput = document.getElementById('income');
+        const savingsGoalInput = document.getElementById('savings-goal');
+        const totalExpensesDiv = document.getElementById('total-expenses');
+        const savingsDiv = document.getElementById('savings');
+        const adviceDiv = document.getElementById('advice');
+
+        addExpenseBtn.addEventListener('click', () => {
+            const newExpenseEntry = expenseEntryTemplate.cloneNode(true);
+            newExpenseEntry.style.display = 'block'; 
+            newExpenseEntry.querySelector('.remove-expense').addEventListener('click', () => {
+                newExpenseEntry.remove(); 
+            });
+            expenseEntriesContainer.appendChild(newExpenseEntry);
+        });
+
+        calculateBtn.addEventListener('click', async () => {
+            const income = parseFloat(incomeInput.value);
+            const savingsGoal = parseFloat(savingsGoalInput.value);
+
+            const expenses = [];
+            const expenseFields = document.querySelectorAll('#expense-entries input[id="expense-category"]');
+            const amountFields = document.querySelectorAll('#expense-entries input[id="expense-amount"]');
+
+            for (let i = 0; i < expenseFields.length; i++) {
+                const category = expenseFields[i].value;
+                const amount = parseFloat(amountFields[i].value);
+                if (!isNaN(amount)) { 
+                    expenses.push({ category: category, amount: amount });
+                }
+            }
+
+            try {
+                const response = await fetch('/track_expenses', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ income: income, expenses: expenses, savings_goal: savingsGoal })
+                });
+
+                const data = await response.json();
+                totalExpensesDiv.textContent = `Total Expenses: ${data.total_expenses}`;
+                savingsDiv.textContent = `Savings: ${data.savings}`;
+                adviceDiv.textContent = `Advice: ${data.advice}`;
+
+            } catch (error) {
+                console.error('Error:', error);
+                totalExpensesDiv.textContent = 'Error fetching data.';
+                savingsDiv.textContent = '';
+                adviceDiv.textContent = '';
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <h2>Investment Recommendation</h2>
+
+    <label for="income">Income:</label>
+    <input type="number" id="income" /><br><br>
+
+    <label for="risk-tolerance">Risk Tolerance:</label><br>
+    <input type="radio" id="low" name="risk-tolerance" value="low">
+    <label for="low">Low</label><br>
+    <input type="radio" id="medium" name="risk-tolerance" value="medium">
+    <label for="medium">Medium</label><br>
+    <input type="radio" id="high" name="risk-tolerance" value="high">
+    <label for="high">High</label><br><br>
+
+    <button id="get-recommendation">Get Recommendation</button>
+    <p id="recommendation"></p>
+
+    <script>
+        const getRecommendationBtn = document.getElementById('get-recommendation');
+        const recommendationDiv = document.getElementById('recommendation');
+
+        getRecommendationBtn.addEventListener('click', async () => {
+            const userIncome = parseFloat(document.getElementById('income').value);
+            const userRiskTolerance = document.querySelector('input[name="risk-tolerance"]:checked').value;
+
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        income: userIncome, 
+                        risk_tolerance: userRiskTolerance 
+                    })
+                });
+
+                const data = await response.json();
+                recommendationDiv.textContent = data.recommendation;
+
+            } catch (error) {
+                console.error('Error:', error);
+                recommendationDiv.textContent = 'Error fetching recommendation.';
+            }
+        });
+    </script>
+
+</body>
+</html>
